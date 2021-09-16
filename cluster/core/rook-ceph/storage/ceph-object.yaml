@@ -8,7 +8,7 @@ spec:
   metadataPool:
     failureDomain: host
     replicated:
-      size: 3
+      size: 1
   dataPool:
     failureDomain: host
     erasureCoded:
