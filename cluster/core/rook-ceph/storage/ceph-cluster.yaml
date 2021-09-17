@@ -14,7 +14,7 @@ spec:
   removeOSDsIfOutAndSafeToRemove: false
   mon:
     count: 1
-    allowMultiplePerNode: false
+    allowMultiplePerNode: true
   placement:
     all:
       tolerations:
