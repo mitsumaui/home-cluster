@@ -11,3 +11,4 @@ resources:
   - metallb-charts.yaml
   - rook-ceph-charts.yaml
   - grafana-charts.yaml
+  - infracloudio-charts.yaml
