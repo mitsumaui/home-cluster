@@ -6,15 +6,14 @@ metadata:
     namespace: monitoring
 stringData:
     comm-config.yaml: ENC[AES256_GCM,data:esD4Xqa68/m/Guz5cCCBOo1gQlG8weRXlyij5ZMijFEFWLyiRYZj5zT9wEpzVNiqgKGmaoPFTfoH30/nBXi+K6ExALpdoV2P5oMceziIh8Du4fjxl/F+/goLiBrjbVNKO/lAuaXCzi7csA3zB6swR0t5DC91SvIsP/z13t2aL+k+fX485xpWV8PTRCFf/SBhHhpdW4yzLALDATYX+Q==,iv:MJwPkA5SYyQum3HXQrK3CorbYVS3z72+s+GyjVCbbOw=,tag:AIiwIcLpLLzialj8JIaXew==,type:str]
-type: Opaque
 sops:
     kms: []
     gcp_kms: []
     azure_kv: []
     hc_vault: []
     age: []
-    lastmodified: "2021-09-19T21:16:57Z"
-    mac: ENC[AES256_GCM,data:72vqxvBKNVUhQO+45U/1icZ1i7e18EN0FLfHCVQscdDoLWKhX2nckVxRyygOT3Z1RD/Yu0pYBAOCf8sS7gguLaOOZxgv0lbNk2nLqViUGNQswo4cy810DmPNYYdJnB1XJdhw6/LYijwsM/sh67G63PldM/0dliesYS0B+k/hD78=,iv:UPZObrbTf8m3FMUTcnNuqlish+pof8qLMu9/ox58npU=,tag:Tp46lL3uFDQI8GB9am5iCA==,type:str]
+    lastmodified: "2021-09-19T21:30:37Z"
+    mac: ENC[AES256_GCM,data:hsLXXdjFBcJ6e/n5+lXYRNEUymOq8k/AKYM0aThtaq5AdS7H92rUvdzoCF2DiaIYYtERA/Ea2846kim6oUx32dyd7Qj+1/DwHJFyWTgFKgtq1cvr2gM36q0ITCcaPineUBgEn+1R/SycZLm5WkuSeX7V5vVy6ibIU6SnJl/ivWc=,iv:7h4LWm4GTYcsq5meJhYShoZ+UGX62Qy81F8NyltguSg=,tag:wrfAujK5dNza7JAzsnqeag==,type:str]
     pgp:
         - created_at: "2021-09-19T21:10:48Z"
           enc: |
