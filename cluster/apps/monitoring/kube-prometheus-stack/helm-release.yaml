@@ -111,25 +111,25 @@ spec:
               - node
             targetLabel: instance
     kubeApiServer:
-      enabled: true
+      enabled: false
     kubeControllerManager:
-      enabled: true
+      enabled: false
       endpoints:
         - 192.168.167.18
     kubeScheduler:
-      enabled: true
+      enabled: false
       endpoints:
         - 192.168.167.18
     kubeProxy:
-      enabled: true
+      enabled: false
       endpoints:
         - 192.168.167.18
     kubeEtcd:
-      enabled: true
+      enabled: false
       endpoints:
         - 192.168.167.18
       service:
-        enabled: true
+        enabled: false
         port: 2381
         targetPort: 2381
     # Setting this option to 0 disabled CPU limits
