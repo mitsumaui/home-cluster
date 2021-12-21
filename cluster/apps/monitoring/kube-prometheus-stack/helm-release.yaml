@@ -10,7 +10,7 @@ spec:
     spec:
       # renovate: registryUrl=https://prometheus-community.github.io/helm-charts
       chart: kube-prometheus-stack
-      version: 19.3.0
+      version: 25.0.0
       sourceRef:
         kind: HelmRepository
         name: prometheus-community-charts
@@ -27,7 +27,7 @@ spec:
           - name: "null"
           - name: "discord"
             slack_configs:
-              - channel: "#prometheus-hc"
+              - channel: "#home-cluster"
                 icon_url: https://avatars3.githubusercontent.com/u/3380462
                 username: "Prometheus"
                 send_resolved: true
@@ -36,9 +36,7 @@ spec:
                 text: >-
                   {{ range .Alerts -}}
                     **Alert:** {{ .Annotations.title }}{{ if .Labels.severity }} - `{{ .Labels.severity }}`{{ end }}
-
                   **Description:** {{ if ne .Annotations.description ""}}{{ .Annotations.description }}{{else}}N/A{{ end }}
-
                   **Details:**
                     {{ range .Labels.SortedPairs }} • *{{ .Name }}:* `{{ .Value }}`
                     {{ end }}
@@ -67,7 +65,6 @@ spec:
         enabled: true
         pathType: Prefix
         ingressClassName: "nginx"
-        annotations:
         hosts:
           - "alert-manager.${SECRET_DOMAIN}"
         tls:
@@ -81,19 +78,20 @@ spec:
               resources:
                 requests:
                   storage: 1Gi
-    nodeExporter:
-      serviceMonitor:
-        relabelings:
-          - action: replace
-            regex: (.*)
-            replacement: $1
-            sourceLabels:
-              - __meta_kubernetes_pod_node_name
-            targetLabel: kubernetes_node
     kube-state-metrics:
       fullnameOverride: kube-state-metrics
     prometheus-node-exporter:
       fullnameOverride: node-exporter
+      prometheus:
+        monitor:
+          enabled: true
+          relabelings:
+            - action: replace
+              regex: (.*)
+              replacement: $1
+              sourceLabels:
+                - __meta_kubernetes_pod_node_name
+              targetLabel: kubernetes_node
     grafana:
       enabled: false
       forceDeployDashboards: true
@@ -115,38 +113,57 @@ spec:
     kubeControllerManager:
       enabled: false
       endpoints:
-        - 192.168.167.18
+      service:
+        enabled: true
+        port: 10257
+        targetPort: 10257
+      serviceMonitor:
+        enabled: true
+        https: true
+        insecureSkipVerify: true
     kubeScheduler:
       enabled: false
       endpoints:
-        - 192.168.167.18
+      service:
+        enabled: true
+        port: 10259
+        targetPort: 10259
+      serviceMonitor:
+        enabled: true
+        https: true
+        insecureSkipVerify: true
     kubeProxy:
       enabled: false
       endpoints:
-        - 192.168.167.18
     kubeEtcd:
       enabled: false
       endpoints:
-        - 192.168.167.18
       service:
-        enabled: false
+        enabled: true
         port: 2381
         targetPort: 2381
-    # Setting this option to 0 disabled CPU limits
     prometheusOperator:
-      configReloaderCpu: 0
+      prometheusConfigReloader:
+        resources:
+          requests:
+            cpu: 100m
+            memory: 50Mi
+          limits:
+            cpu: 200m
+            memory: 100Mi
     prometheus:
       ingress:
         enabled: true
         pathType: Prefix
         ingressClassName: "nginx"
-        annotations:
         hosts:
           - "prometheus.${SECRET_DOMAIN}"
         tls:
           - hosts:
               - "prometheus.${SECRET_DOMAIN}"
       thanosService:
+        enabled: false
+      thanosServiceMonitor:
         enabled: false
       prometheusSpec:
         replicas: 1
@@ -166,8 +183,9 @@ spec:
                 requests:
                   storage: 10Gi
         # thanos:
-        #   image: quay.io/thanos/thanos:v0.22.0
+        #   image: quay.io/thanos/thanos:v0.23.1
         #   version: v0.22.0
         #   objectStorageConfig:
         #     name: thanos-objstore
         #     key: objstore.yml
+        # additionalScrapeConfigs:
