@@ -103,8 +103,8 @@ spec:
       ingressClassName: "nginx"
       annotations:
         ingress.kubernetes.io/whitelist-source-range: 192.168.167.0/24
-        nginx.ingress.kubernetes.io/auth-url: "https://auth.${SECRET_DOMAIN}/oauth2/auth"
-        nginx.ingress.kubernetes.io/auth-signin: https://auth.${SECRET_DOMAIN}/oauth2/start
+        # nginx.ingress.kubernetes.io/auth-url: "https://auth.${SECRET_DOMAIN}/oauth2/auth"
+        # nginx.ingress.kubernetes.io/auth-signin: https://auth.${SECRET_DOMAIN}/oauth2/start
       hosts:
       - "grafana.${SECRET_DOMAIN}"
       tls:
