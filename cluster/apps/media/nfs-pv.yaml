@@ -1,0 +1,117 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-plex-movies-pv
+spec:
+  storageClassName: nfs-plex-movies
+  capacity:
+    storage: 1Mi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    server: "${NAS_SERVER}"
+    path: "/mnt/Vol1/Movies"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nfs-plex-movies-pvc
+  namespace: media
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: nfs-plex-movies
+  resources:
+    requests:
+      storage: 1Mi
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-plex-cfmovies-pv
+spec:
+  storageClassName: nfs-plex-cfmovies
+  capacity:
+    storage: 1Mi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    server: "${NAS_SERVER}"
+    path: "/mnt/Vol1/CFMovies"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nfs-plex-cfmovies-pvc
+  namespace: media
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: nfs-plex-cfmovies
+  resources:
+    requests:
+      storage: 1Mi
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-plex-cftvshows-pv
+spec:
+  storageClassName: nfs-plex-cftvshows
+  capacity:
+    storage: 1Mi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    server: "${NAS_SERVER}"
+    path: "/mnt/SG6TB/CFTVShows"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nfs-plex-cftvshows-pvc
+  namespace: media
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: nfs-plex-cftvshows
+  resources:
+    requests:
+      storage: 1Mi
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-plex-tvshows-pv
+spec:
+  storageClassName: nfs-plex-tvshows
+  capacity:
+    storage: 1Mi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    server: "${NAS_SERVER}"
+    path: "/mnt/SG6TB/TVShows"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nfs-plex-tvshows-pvc
+  namespace: media
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: nfs-plex-tvshows
+  resources:
+    requests:
+      storage: 1Mi
