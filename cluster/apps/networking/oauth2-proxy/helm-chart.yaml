@@ -8,12 +8,12 @@ spec:
   interval: 5m
   chart:
     spec:
-      # renovate: registryUrl=https://oauth2-proxy.github.io/manifests
+      # renovate: registryUrl=https://k8s-at-home.com/charts/
       chart: oauth2-proxy
-      version: 4.2.2
+      version: 5.0.7
       sourceRef:
         kind: HelmRepository
-        name: oauth2-proxy-charts
+        name: k8s-at-home-charts
         namespace: flux-system
       interval: 5m
   values:
