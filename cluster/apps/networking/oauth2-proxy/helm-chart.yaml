@@ -27,9 +27,9 @@ spec:
       path: /oauth2
       hosts:
         - "auth.${SECRET_DOMAIN}"
-      tls:
-        - hosts:
-          - "auth.${SECRET_DOMAIN}"
+      # tls:
+      #   - hosts:
+      #     - "auth.${SECRET_DOMAIN}"
     extraArgs:
       provider: oidc
       oidc-issuer-url: "${OAUTH2_PROXY_OIDC_ISSUER_URL}"
