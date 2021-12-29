@@ -5,6 +5,7 @@ metadata:
   name: cluster-settings
   namespace: flux-system
 data:
+  WHITELIST_SOURCE_RANGE: 192.168.167.0/24
   METALLB_LB_RANGE: 192.168.167.70-192.168.167.90
   METALLB_TRAEFIK_ADDR: 192.168.167.80
   NAS_SERVER: 192.168.167.5
