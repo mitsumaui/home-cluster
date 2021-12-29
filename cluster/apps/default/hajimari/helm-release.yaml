@@ -32,7 +32,7 @@ spec:
       name: "jase"
       customApps:
         - name: NAS
-          url: "https://freenas.01102009.xyz"
+          url: "${NAS_URL}"
           icon: "harddisk"
       groups:
         - name: Communication
