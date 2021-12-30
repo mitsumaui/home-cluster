@@ -7,3 +7,4 @@ resources:
   - networking.yaml
   - longhorn-system.yaml
   - media.yaml
+  - home.yaml
