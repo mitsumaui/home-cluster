@@ -1,0 +1,103 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: plex
+  namespace: media
+spec:
+  interval: 5m
+  chart:
+    spec:
+      # renovate: registryUrl=https://k8s-at-home.com/charts/
+      chart: plex
+      version: 6.1.0
+      sourceRef:
+        kind: HelmRepository
+        name: k8s-at-home-charts
+        namespace: flux-system
+      interval: 5m
+  values:
+    image:
+      repository: ghcr.io/k8s-at-home/plex
+      tag: v1.25.2.5319-c43dc0277
+    env:
+      TZ: "Europe/London"
+      PLEX_CLAIM: "${PLEX_CLAIM}"
+    podSecurityContext:
+      supplementalGroups:
+      - 44
+      - 109
+      - 1001
+    service:
+      main:
+        type: LoadBalancer
+        loadBalancerIP: ${PLEX_LB}
+        externalTrafficPolicy: Local
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: nginx
+        annotations:
+          hajimari.io/enable: "true"
+          hajimari.io/icon: "plex"
+        hosts:
+        - host: plex.${SECRET_DOMAIN}
+          paths:
+          - path: /
+            pathType: Prefix
+        tls:
+        - hosts:
+          - plex.${SECRET_DOMAIN}
+    persistence:
+      usb:
+        enabled: true
+        type: hostPath
+        hostPath: /dev/dvb
+      config:
+        enabled: true
+        existingClaim: plex-config-pvc
+      transcode:
+        enabled: true
+        existingClaim: plex-transcode-pvc
+        # enabled: true
+        # emptyDir:
+        #   enabled: true
+        #   medium: "Memory"
+      media-movies:
+        enabled: true
+        existingClaim: nfs-plex-movies-pvc
+        mountPath: /media-movies
+        readOnly: true
+      media-cfmovies:
+        enabled: true
+        existingClaim: nfs-plex-cfmovies-pvc
+        mountPath: /media-cfmovies
+        readOnly: true
+      media-cftvshows:
+        enabled: true
+        existingClaim: nfs-plex-cftvshows-pvc
+        mountPath: /media-cftvshows
+        readOnly: true
+      media-tvshows: 
+        enabled: true
+        existingClaim: nfs-plex-tvshows-pvc
+        mountPath: /media-tvshows
+        readOnly: true
+    securityContext:
+      privileged: true
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: "feature.node.kubernetes.io/custom-tuner"
+              operator: In
+              values: ["true"]
+    resources:
+      requests:
+        gpu.intel.com/i915: 1
+        cpu: 1000m
+        memory: 1000Mi
+      limits:
+        gpu.intel.com/i915: 1
+        memory: 16000Mi
