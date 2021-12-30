@@ -144,7 +144,7 @@ spec:
         type: custom
         volumeSpec:
           secret:
-            secretName: "networking/${SECRET_DOMAIN/./-}-tls"
+            secretName: "${SECRET_DOMAIN/./-}-tls"
     resources:
       requests:
         memory: 1200M
