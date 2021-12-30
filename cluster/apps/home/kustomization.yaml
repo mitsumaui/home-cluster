@@ -6,4 +6,5 @@ resources:
   - leaf2mqtt
   - zigbee2mqtt
   - node-red
+  - esphome
   
