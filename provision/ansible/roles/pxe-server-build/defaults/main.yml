@@ -1,0 +1,7 @@
+---
+
+tftpboot_dir: "/var/lib/tftpboot"
+ubuntu_iso: "ubuntu-20.04.3-live-server-amd64.iso"
+ubuntu_iso_checksum: "sha256:f8e3086f3cea0fb3fefb29937ab5ed9d19e767079633960ccb50e76153effc98"
+data_mount_path: "/mnt/longhorn"
+erase_data: false

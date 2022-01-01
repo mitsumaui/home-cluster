@@ -1,0 +1,25 @@
+---
+
+- name: Create mac folders
+  file:
+    path: "{{ tftpboot_dir }}/{{ item.mac_address | lower }}"
+    state: directory
+  with_items: "{{ netboot_servers }}"
+  loop_control:
+    label: "{{ item.hostname }}"
+
+- name: Create meta-data file
+  copy:
+    content: ""
+    dest: "{{ tftpboot_dir }}/{{ item.mac_address | lower }}/meta-data"
+  with_items: "{{ netboot_servers }}"
+  loop_control:
+    label: "{{ item.hostname }}"      
+
+- name: Create user-data file
+  template:
+    src: user-data.j2
+    dest: "{{ tftpboot_dir }}/{{ item.mac_address | lower }}/user-data"
+  with_items: "{{ netboot_servers }}"
+  loop_control:
+    label: "{{ item.hostname }}"      

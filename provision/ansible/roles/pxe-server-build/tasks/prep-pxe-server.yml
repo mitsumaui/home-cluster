@@ -1,0 +1,95 @@
+---
+
+- name: Install packages
+  apt:
+    pkg:
+      - tftpd-hpa
+      - apache2
+    state: present
+    update_cache: yes
+
+- name: Config Apache
+  template:
+    src: apache-tftp.j2
+    dest: /etc/apache2/conf-available/tftp.conf
+  register: apache_conf
+
+- name: Config tftp
+  command: a2enconf tftp
+  when: apache_conf.changed
+
+- name: Restart apache2
+  service:
+    name: apache2
+    state: restarted
+  when: apache_conf.changed
+
+- name: Create tftpboot folder
+  file:
+    path: "{{ tftpboot_dir }}"
+    state: directory
+
+- name: Configure tftpd
+  template:
+    src: tftpd-hpa.j2
+    dest: /etc/default/tftpd-hpa
+  register: tftp_conf
+
+- name: Restart tftpd-hpa
+  service:
+    name: tftp-hpa
+    state: restarted
+  when: tftp_conf.changed
+
+- name: Download Ubuntu ISO
+  get_url:
+    url: "http://releases.ubuntu.com/releases/20.04/{{ ubuntu_iso }}"
+    dest: "{{ tftpboot_dir }}/{{ ubuntu_iso }}"
+    checksum: "{{ ubuntu_iso_checksum }}"
+
+- name: Create tmpmnt
+  file:
+    path: /mnt/tmpmnt
+    state: directory
+
+- name: Mount ISO
+  mount:
+    path: /mnt/tmpmnt
+    src: "{{ tftpboot_dir }}/{{ ubuntu_iso }}"
+    fstype: iso9660
+    opts: ro,noauto
+    state: mounted
+
+- name: copy kernel files
+  copy:
+    src: "/mnt/tmpmnt/casper/{{ item }}"
+    dest: "/var/lib/tftpboot/{{ item }}"
+    remote_src: yes
+  with_items:
+    - "vmlinuz"
+    - "initrd"
+
+- name: Unmount ISO
+  mount:
+    path: /mnt/tmpmnt
+    state: unmounted
+
+- name: Remove tmpmnt
+  file:
+    path: /mnt/tmpmnt
+    state: absent
+
+- name: Download UEFI grub
+  get_url:
+    url: http://archive.ubuntu.com/ubuntu/dists/focal/main/uefi/grub2-amd64/current/grubnetx64.efi.signed
+    dest: "{{ tftpboot_dir }}/grubnetx64.efi.signed"
+
+- name: Ensure grub folder exists
+  file:
+    path: "{{ tftpboot_dir }}/grub"
+    state: directory
+
+- name: Configure grub
+  template:
+    src: grub.j2
+    dest: /var/lib/tftpboot/grub/grub.cfg

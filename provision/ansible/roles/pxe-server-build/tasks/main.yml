@@ -1,0 +1,8 @@
+---
+- include: prep-pxe-server.yml
+  tags:
+    - pxe-prep
+
+- include: deploy-pxe-config.yml
+  tags:
+    - userdata
