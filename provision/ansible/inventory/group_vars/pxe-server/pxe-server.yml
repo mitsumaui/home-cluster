@@ -1,13 +1,6 @@
 erase_data: false
 
 netboot_servers:
-  - hostname: 'k8s-nuc'
-    mac_address: '1c:69:7a:6b:39:32'
-    ip_address: '192.168.167.20'
-    network_adapter: 'eno1'
-    install_disk: 'nvme0n1'
-    os_size: '80G'
-    data_disk: null
   - hostname: 'k8s-hpe1'
     mac_address: '10:E7:C6:14:0F:75'
     ip_address: '192.168.167.21'
@@ -22,6 +15,13 @@ netboot_servers:
     install_disk: 'sda'
     os_size: '-1'
     data_disk: 'nvme0n1'
+  - hostname: 'k8s-nuc'
+    mac_address: '1c:69:7a:6b:39:32'
+    ip_address: '192.168.167.23'
+    network_adapter: 'eno1'
+    install_disk: 'nvme0n1'
+    os_size: '80G'
+    data_disk: null
 
 gateway: '192.168.167.1'
 nameservers: '192.168.167.1'
