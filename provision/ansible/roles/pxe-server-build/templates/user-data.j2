@@ -23,7 +23,10 @@ autoinstall:
     network:
       version: 2
       ethernets:
-        {{ item.network_adapter }}:
+        eth0:
+          match:
+            macaddress: {{ item.mac_address | upper }}
+          set-name: eth0
           addresses: [{{ item.ip_address }}/24]
           critical: true
           dhcp-identifier: mac
