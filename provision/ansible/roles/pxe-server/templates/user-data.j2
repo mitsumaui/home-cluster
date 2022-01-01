@@ -1,0 +1,179 @@
+#cloud-config
+autoinstall:
+  version: 1
+  apt:
+    geoip: true
+    preserve_sources_list: false
+    primary:
+    - arches: [amd64, i386]
+      uri: http://gb.archive.ubuntu.com/ubuntu
+    - arches: [default]
+      uri: http://ports.ubuntu.com/ubuntu-ports
+  updates: security
+  identity: 
+    hostname: {{ item.hostname }}
+    realname: ubuntu
+    username: ubuntu
+    password: $6$.iRMQX.qdZXGtSWJ$e0.gvbid1VEuKbILD/2vPKPmOw2BEGajrZx5FcQawUTM4UBRiBGHwrLpXBxUlTv1WUyBmdKE84UQpbYzTboNi.
+  keyboard: 
+    layout: {{ keyboard_layout }}
+    variant: ''
+  locale: {{ locale }}
+  network:
+    network:
+      version: 2
+      ethernets:
+        {{ item.network_adapter }}:
+          addresses: [{{ item.ip_address }}/24]
+          critical: true
+          dhcp-identifier: mac
+          gateway4: {{ gateway }}
+          nameservers:
+            addresses: [{{ nameservers }}]
+            search: [{{ dns_search_suffix }}]
+  ssh:
+    allow-pw: true
+    authorized-keys:
+    - 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDdrAoF4x/zhfqtJrBJHpiQsxSTqkLMCe/sPRv/EXRWyrq5Q8wl5mbvsJ/IgpK6+0cfgqR5AQewtTabOCjOG4kqKwd5qzJguc2T/eQ06Pgfwb3BJgir9MiSF2bdeClaW54GO57of0eB0JrDWCpvY8DvhciaNgMKfSukxrOW2Czj3vquXH+TEG7FDNcnuG/ihyTZE2WVTnzMtt8qxWgWJsaDbNT5NYaoZblUjLsUI97q0jsOIldOpedjjdenT6jHYUKkFc71FUAbOPT9PIoXPVrbI5YCt4SBl6/oKvAsLbPP5ECiH2gviAtAtmyqSAEqQLgyjYPfGnS8ys8Icpgy044GP3dY7fg4O6h8iCUkvaP6/qi1qmlo7hj8cFdgARkIhc9vuORetAoy/VLY4VIq3Db0BgnIV1ddWW/HZcMPd20iuY7hGFmmLh5+8JI2iGjYYP7OSsccrAk1PHkqoCLxHfCDBR6rRnab4fg/tP3ZEHmyzMQcbeDqjwctzdO/uNSsLdU= jason@rig'
+    - 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDbqWE1b14Y49j3RBS4coWUR0Kd6GR6SFYWqkCwV1+h3fSeU3Xsrotp1Sh+kM91VnUoz1O5RbUF2Sc7HIYbPuwKjUwXu6hJOs4J7sTgQX9GY/3dHdiNo9Mpri8PWVTqwHa/BuGFgsj9jfEdRaVothKx2WE4M6WdxXYp81ofP1jODDbviIVtExWWzElo7eFpONtNnaBHey7R2a4zVRK7hE9ogryS66N3++OsO4mzIc3PTbIOVO2CIGG85RsYh5/eSpQfv9LkOztUX6SYQnYmKz3Vkmw3lDC5siCV5gnNlDTcHE9/dioNH7Kzy4e+hkaJsU8Xk8WZlXomeV+BOlWcYnLvrL0vcD66V/rHMlO1UUrWdpgqLTUVe5THgUUtAhlcYtCU8EqLNZQ5uIHJMVyKFSL4Ib2IeCAbl9GDYivXxSeviSJaZHVUvL1/t+I7Z52b5L/WnAh5jxO/niJtU3ejrmstPuhroKRKug0zLjX52FYAqug6XFZBWjeyLAA3MJ55rEk= jason@Jasons-MacBook-Pro.local'    
+    install-server: true
+  late-commands:
+  - "echo 'ubuntu ALL=(ALL) NOPASSWD: ALL' >/target/etc/sudoers.d/ubuntu"
+  storage:
+    grub:
+      reorder_uefi: False
+    swap:
+      size: 0
+    config:
+    - id: disk-os
+      type: disk
+      ptable: gpt
+      path: /dev/{{ item.install_disk }}
+      name: ''
+      grub_device: false
+      wipe: superblock
+      preserve: false
+    - id: part-boot-efi
+      type: partition
+      device: disk-os
+      size: 536870912
+      flag: boot
+      number: 1
+      grub_device: true
+      preserve: false
+      wipe: superblock
+    - id: part-boot
+      type: partition
+      device: disk-os
+      size: 1073741824
+      flag: ''
+      number: 2
+      grub_device: false
+      preserve: false
+      wipe: superblock
+    - id: part-lvm
+      type: partition
+      device: disk-os
+      size: -1
+      flag: ''
+      number: 3
+      grub_device: false
+      preserve: false
+      wipe: superblock
+    - id: lvm_vg_os
+      type: lvm_volgroup
+      name: ubuntu-vg
+      devices: [part-lvm]
+      preserve: false
+    - id: lvm_part_root
+      type: lvm_partition
+      name: ubuntu-lv
+      volgroup: lvm_vg_os
+      size: {{ item.os_size | default('-1') }}
+      preserve: false
+      wipe: superblock
+    - id: format-boot
+      type: format
+      fstype: ext4
+      volume: part-boot
+      preserve: false
+    - id: format-boot-efi
+      type: format
+      fstype: fat32
+      volume: part-boot-efi
+      preserve: false
+    - id: format-root
+      type: format
+      fstype: ext4
+      volume: lvm_part_root
+      preserve: false
+    - id: mount-root
+      type: mount
+      path: /
+      device: format-root
+    - id: mount-boot
+      type: mount
+      path: /boot
+      device: format-boot
+    - id: mount-boot-efi
+      type: mount
+      path: /boot/efi
+      device: format-boot-efi
+{% if item.data_disk is not defined and data_mount_path is defined %}
+    - id: lvm_part_data
+      type: lvm_partition
+      name: data-lv
+      volgroup: lvm_vg_os
+      size: -1
+      preserve: false
+      wipe: superblock
+    - id: format-data
+      type: format
+      fstype: ext4
+      volume: lvm_part_data
+      preserve: false
+    - id: mount-data
+      type: mount
+      path: {{ data_mount_path }}
+      device: format-data
+{% endif %}
+{% if item.data_disk is defined and data_mount_path is defined and erase_data == true%}
+    - id: disk-data
+      type: disk
+      ptable: gpt
+      path: /dev/{{ item.data_disk }}
+      name: ''
+      grub_device: false
+      wipe: superblock
+      preserve: false
+    - id: part-lvm-data
+      type: partition
+      device: disk-data
+      size: -1
+      flag: ''
+      number: 1
+      grub_device: false
+      preserve: false
+      wipe: superblock
+    - id: lvm_vg_data
+      type: lvm_volgroup
+      name: data-vg
+      devices: [part-lvm-data]
+      preserve: false
+    - id: lvm_part_data
+      type: lvm_partition
+      name: data-lv
+      volgroup: lvm_vg_data
+      size: 100%
+      preserve: false
+      wipe: superblock
+    - id: format-data
+      type: format
+      fstype: ext4
+      volume: lvm_part_data
+      preserve: false
+    - id: mount-data
+      type: mount
+      path: {{ data_mount_path }}
+      device: format-data
+{% endif %}
