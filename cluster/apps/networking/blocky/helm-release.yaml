@@ -30,8 +30,7 @@ spec:
         - tcp+udp:1.1.1.1
       customDNS:
          mapping:
-           ${SECRET_DOMAIN2}: 192.168.160.10
-           freenas.${SECRET_DOMAIN}: 192.168.167.5
+           freenas.${SECRET_DOMAIN2}: 192.168.167.5
            ${SECRET_DOMAIN}: ${INGRESS_NGINX_LB}
            router.lan: 192.168.167.1
            k8s-nuc.lan: 192.168.167.15
