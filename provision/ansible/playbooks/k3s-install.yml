@@ -74,13 +74,13 @@
         - k3s_server_manifests_urls | length > 0
   
     - name: Label longhorn nodes
-      ansible.builtin.command: kubectl --kubeconfig={{ repo_abs_path.stdout }}/provision/kubeconfig label node {{ inventory_hostname }} node.longhorn.io/create-default-disk=config
+      ansible.builtin.command: kubectl label node {{ inventory_hostname }} node.longhorn.io/create-default-disk=config --overwrite
       when: longhorn_config == true
       tags:
         - longhorn
 
     - name: Longhorn node config
-      ansible.builtin.command: kubectl --kubeconfig={{ repo_abs_path.stdout }}/provision/kubeconfig annotate node {{ inventory_hostname }} node.longhorn.io/default-disks-config=[{"path":"/mnt/longhorn","allowScheduling":true, "tags":["ssd"]}]
+      ansible.builtin.command: kubectl annotate node {{ inventory_hostname }} node.longhorn.io/default-disks-config='[{"path":"/mnt/longhorn","allowScheduling":true, "tags":["ssd"]}]' --overwrite
       when: longhorn_config == true
       tags:
         - longhorn

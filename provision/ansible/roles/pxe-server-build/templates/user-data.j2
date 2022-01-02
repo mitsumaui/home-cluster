@@ -162,7 +162,7 @@ autoinstall:
       wipe: superblock
     - id: format-data
       type: format
-      fstype: ext4
+      fstype: xfs
       volume: lvm_part_data
       preserve: false
     - id: mount-data
@@ -202,7 +202,7 @@ autoinstall:
       wipe: superblock
     - id: format-data
       type: format
-      fstype: ext4
+      fstype: xfs
       volume: lvm_part_data
       preserve: false
     - id: mount-data

@@ -1,0 +1,64 @@
+---
+- hosts:
+    - master
+    - worker
+  become: true
+  gather_facts: true
+  any_errors_fatal: true
+  pre_tasks:
+    - name: Pausing for 5 seconds...
+      pause:
+        seconds: 5
+
+  tasks:
+    - name: Validate Disk exists
+      stat:
+        path: "{{ data_path }}"
+      register: data_path_exists
+      when: data_path is defined
+
+    - name: Configure longhorn disk
+      when: 
+        - data_path is defined
+        - data_path_exists.stat.exists
+      block:
+      - name: Create mountpoint
+        file:
+          state: directory
+          path: "/mnt/longhorn"
+
+    #   - name: Create VG
+    #     lvg:
+    #       vg: "longhorn"
+    #       pvs: "{{ data_path }}"
+    #       state: present
+    
+    #   - name: Conduct PV resize test
+    #     shell: "pvresize {{ data_path }} -v -t"
+    #     changed_when: false
+    #     register: lvm_pvresize_output
+
+    #   - name: Resize PV
+    #     shell: "pvresize {{ data_path }}"
+    #     when: '"No change to size of physical volume" not in lvm_pvresize_output.stderr'
+
+    #   - name: Create LV
+    #     lvol:
+    #       lv: "data"
+    #       vg: "longhorn"
+    #       size: "100%PVS"
+    #       state: present
+
+      - name: Format disk
+        filesystem:
+          dev: "/dev/mapper/data--vg-data--lv"
+          fstype: "xfs"
+          resizefs: yes
+          force: yes
+
+      - name: Mount disk
+        mount:
+          src: "/dev/mapper/data--vg-data--lv"
+          name: "/mnt/longhorn"
+          fstype: "xfs"
+          state: mounted
