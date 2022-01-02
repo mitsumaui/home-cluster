@@ -9,7 +9,25 @@ autoinstall:
       uri: http://gb.archive.ubuntu.com/ubuntu
     - arches: [default]
       uri: http://ports.ubuntu.com/ubuntu-ports
-  updates: security
+  early-commands:
+  - 'sed -i "s/#DNS=/DNS=192.168.167.1/g" /etc/systemd/resolved.conf'
+  - 'systemctl restart systemd-resolved'
+  updates: all
+  packages:
+  - apt-transport-https
+  - ca-certificates
+  - curl
+  - ebtables
+  - iputils-ping
+  - ipvsadm
+  - lvm2
+  - net-tools
+  - nfs-common
+  - open-iscsi
+  - psmisc
+  - smartmontools
+  - software-properties-common
+  - unattended-upgrades
   identity: 
     hostname: {{ item.hostname }}
     realname: ubuntu
@@ -41,7 +59,19 @@ autoinstall:
     - 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDbqWE1b14Y49j3RBS4coWUR0Kd6GR6SFYWqkCwV1+h3fSeU3Xsrotp1Sh+kM91VnUoz1O5RbUF2Sc7HIYbPuwKjUwXu6hJOs4J7sTgQX9GY/3dHdiNo9Mpri8PWVTqwHa/BuGFgsj9jfEdRaVothKx2WE4M6WdxXYp81ofP1jODDbviIVtExWWzElo7eFpONtNnaBHey7R2a4zVRK7hE9ogryS66N3++OsO4mzIc3PTbIOVO2CIGG85RsYh5/eSpQfv9LkOztUX6SYQnYmKz3Vkmw3lDC5siCV5gnNlDTcHE9/dioNH7Kzy4e+hkaJsU8Xk8WZlXomeV+BOlWcYnLvrL0vcD66V/rHMlO1UUrWdpgqLTUVe5THgUUtAhlcYtCU8EqLNZQ5uIHJMVyKFSL4Ib2IeCAbl9GDYivXxSeviSJaZHVUvL1/t+I7Z52b5L/WnAh5jxO/niJtU3ejrmstPuhroKRKug0zLjX52FYAqug6XFZBWjeyLAA3MJ55rEk= jason@Jasons-MacBook-Pro.local'    
     install-server: true
   late-commands:
-  - "echo 'ubuntu ALL=(ALL) NOPASSWD: ALL' >/target/etc/sudoers.d/ubuntu"
+  - 'echo "ubuntu ALL=(ALL) NOPASSWD: ALL" >/target/etc/sudoers.d/ubuntu'
+  - 'echo "APT::Periodic::Update-Package-Lists "1";" >/target/etc/apt/apt.conf.d/20auto-upgrades'
+  - 'echo "APT::Periodic::Download-Upgradeable-Packages "1";" >>/target/etc/apt/apt.conf.d/20auto-upgrades'
+  - 'echo "APT::Periodic::AutocleanInterval "7";" >>/target/etc/apt/apt.conf.d/20auto-upgrades'
+  - 'echo "APT::Periodic::Unattended-Upgrade "1";" >>/target/etc/apt/apt.conf.d/20auto-upgrades'
+  - 'echo "Unattended-Upgrade::Automatic-Reboot "false";" >/target/etc/apt/apt.conf.d/50unattended-upgrades'
+  - 'echo "Unattended-Upgrade::Remove-Unused-Dependencies "true";" >>/target/etc/apt/apt.conf.d/50unattended-upgrades'
+  - 'echo "Unattended-Upgrade::Allowed-Origins {" >>/target/etc/apt/apt.conf.d/50unattended-upgrades'
+  - 'echo "    "${distro_id} stable";" >>/target/etc/apt/apt.conf.d/50unattended-upgrades'
+  - 'echo "    "${distro_id} ${distro_codename}-security";" >>/target/etc/apt/apt.conf.d/50unattended-upgrades'
+  - 'echo "    "${distro_id} ${distro_codename}-updates";" >>/target/etc/apt/apt.conf.d/50unattended-upgrades'
+  - 'echo "};" >>/target/etc/apt/apt.conf.d/50unattended-upgrades'
+  - 'echo "fs.inotify.max_user_watches=65536" >/target/etc/sysctl.d/98-kubernetes-fs.conf'
   storage:
     grub:
       reorder_uefi: False

@@ -14,7 +14,7 @@
   ansible.builtin.apt:
     name:
       - apt-transport-https
-      - arptables
+      # - arptables - not found
       - ca-certificates
       - curl
       - ebtables
