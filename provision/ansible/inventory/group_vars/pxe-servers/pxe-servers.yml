@@ -1,4 +1,4 @@
-erase_data: false
+erase_data: true
 
 netboot_servers:
   - hostname: 'k8s-hpe1'
@@ -18,7 +18,6 @@ netboot_servers:
     ip_address: '192.168.167.23'
     install_disk: 'nvme0n1'
     os_size: '80G'
-    data_disk: null
 
 gateway: '192.168.167.1'
 nameservers: '192.168.167.1'

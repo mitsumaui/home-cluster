@@ -33,7 +33,6 @@ spec:
       tls:
         - hosts:
           - auth.${SECRET_DOMAIN}
-          secretName: auth-tls
     extraArgs:
       provider: oidc
       oidc-issuer-url: "${OAUTH2_PROXY_OIDC_ISSUER_URL}"
