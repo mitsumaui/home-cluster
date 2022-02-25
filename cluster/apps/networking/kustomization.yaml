@@ -5,4 +5,5 @@ resources:
   - wildcard-certificate
   - oauth2-proxy
   - blocky
+  - adguard
   - omada
