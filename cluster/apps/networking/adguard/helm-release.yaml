@@ -68,7 +68,6 @@ spec:
         tls:
           - hosts:
               - "adguard.${SECRET_DOMAIN}"
-            secretName: tls.adguard
 
     # nodeSelector:
     #   node-role.kubernetes.io/worker: "true"
