@@ -122,25 +122,25 @@ spec:
     kubeApiServer:
       enabled: true
     kubeControllerManager:
-      enabled: true
+      enabled: false
       endpoints:
         - 192.168.167.21
         - 192.168.167.22
         - 192.168.167.23
     kubeScheduler:
-      enabled: true
+      enabled: false
       endpoints:
         - 192.168.167.21
         - 192.168.167.22
         - 192.168.167.23
     kubeProxy:
-      enabled: true
+      enabled: false
       endpoints:
         - 192.168.167.21
         - 192.168.167.22
         - 192.168.167.23
     kubeEtcd:
-      enabled: true
+      enabled: false
       endpoints:
         - 192.168.167.21
         - 192.168.167.22
