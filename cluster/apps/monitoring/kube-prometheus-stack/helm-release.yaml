@@ -8,15 +8,15 @@ spec:
   interval: 5m
   chart:
     spec:
-      # renovate: registryUrl=https://prometheus-community.github.io/helm-charts
       chart: kube-prometheus-stack
-      version: 30.1.0
+      version: 34.7.0
       sourceRef:
         kind: HelmRepository
         name: prometheus-community-charts
         namespace: flux-system
       interval: 5m
   install:
+    createNamespace: true
     remediation:
       retries: 3
   upgrade:
@@ -58,6 +58,9 @@ spec:
           routes:
             - receiver: "null"
               match:
+                alertname: InfoInhibitor
+            - receiver: "null"
+              match:
                 alertname: Watchdog
             - receiver: "discord"
               match_re:
@@ -74,10 +77,10 @@ spec:
         pathType: Prefix
         ingressClassName: "nginx"
         hosts:
-          - "alert-manager.${SECRET_DOMAIN}"
+          - &host "alert-manager.${SECRET_DOMAIN}"
         tls:
           - hosts:
-              - "alert-manager.${SECRET_DOMAIN}"
+              - *host
       alertmanagerSpec:
         storage:
           volumeClaimTemplate:
@@ -146,25 +149,16 @@ spec:
         enabled: true
         port: 2381
         targetPort: 2381
-    prometheusOperator:
-      prometheusConfigReloader:
-        resources:
-          requests:
-            cpu: 100m
-            memory: 50Mi
-          limits:
-            cpu: 200m
-            memory: 100Mi
     prometheus:
       ingress:
         enabled: true
         pathType: Prefix
         ingressClassName: "nginx"
         hosts:
-          - "prometheus.${SECRET_DOMAIN}"
+          - &host "prometheus.${SECRET_DOMAIN}"
         tls:
           - hosts:
-              - "prometheus.${SECRET_DOMAIN}"
+              - *host
       thanosService:
         enabled: false
       thanosServiceMonitor:
