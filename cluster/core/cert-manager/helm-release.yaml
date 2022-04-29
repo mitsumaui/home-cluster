@@ -8,9 +8,8 @@ spec:
   interval: 5m
   chart:
     spec:
-      # renovate: registryUrl=https://charts.jetstack.io/
       chart: cert-manager
-      version: v1.7.2
+      version: v1.8.0
       sourceRef:
         kind: HelmRepository
         name: jetstack-charts
@@ -18,10 +17,10 @@ spec:
   install:
     createNamespace: true
     remediation:
-      retries: 3
+      retries: 5
   upgrade:
     remediation:
-      retries: 3
+      retries: 5
   values:
     installCRDs: false
     webhook:
@@ -35,3 +34,8 @@ spec:
       nameservers:
         - "1.1.1.1"
         - "9.9.9.9"
+    prometheus:
+      enabled: true
+      servicemonitor:
+        enabled: true
+        prometheusInstance: monitoring
