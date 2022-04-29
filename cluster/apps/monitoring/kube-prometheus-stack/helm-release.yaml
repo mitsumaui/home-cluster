@@ -21,11 +21,11 @@ spec:
   upgrade:
     remediation:
       retries: 3
-  valuesFrom:
-    - kind: ConfigMap
-      name: alertmanager-values
-    - kind: ConfigMap
-      name: prometheus-values
+  # valuesFrom:
+  #   - kind: ConfigMap
+  #     name: alertmanager-values
+  #   - kind: ConfigMap
+  #     name: prometheus-values
   values:
     fullnameOverride: prometheus
     alertmanager:
