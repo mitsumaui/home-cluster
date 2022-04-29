@@ -81,6 +81,8 @@ spec:
         - "/config/.vscode"
         - --extensions-dir
         - "/config/.vscode"
+        env:
+          TZ: "Europe/London"
         ingress:
           enabled: true
           ingressClassName: "nginx"
