@@ -61,9 +61,10 @@ spec:
         existingClaim: home-assistant-pvc
     postgresql:
       enabled: true
-      postgresqlUsername: home-assistant
-      postgresqlDatabase: home-assistant
-      postgresqlPassword: "${HASS_POSTGRESQL_PASSWORD}"
+      auth:
+        username: home-assistant
+        database: home-assistant
+        password: "${HASS_POSTGRESQL_PASSWORD}"
       persistence:
         enabled: true
         existingClaim: home-assistant-postgres-pvc
