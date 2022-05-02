@@ -64,9 +64,11 @@ spec:
       image:
         repository: postgres
         tag: '13.6'
-      postgresqlUsername: home-assistant
-      postgresqlDatabase: home-assistant
-      postgresqlPassword: "${HASS_POSTGRESQL_PASSWORD}"
+      auth:
+        database: home-assistant
+        username: home-assistant
+        password: "${HASS_POSTGRESQL_PASSWORD}"
+        postgresPassword: "${HASS_POSTGRESQL_PASSWORD}"
       persistence:
         enabled: true
         existingClaim: home-assistant-postgres-pvc
