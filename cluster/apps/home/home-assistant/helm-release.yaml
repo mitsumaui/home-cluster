@@ -10,7 +10,7 @@ spec:
     spec:
       # renovate: registryUrl=https://k8s-at-home.com/charts/
       chart: home-assistant
-      version: 11.2.1
+      version: 13.1.2
       sourceRef:
         kind: HelmRepository
         name: k8s-at-home-charts
@@ -61,6 +61,9 @@ spec:
         existingClaim: home-assistant-pvc
     postgresql:
       enabled: true
+      image:
+        repository: postgres
+        tag: '13.6'
       postgresqlUsername: home-assistant
       postgresqlDatabase: home-assistant
       postgresqlPassword: "${HASS_POSTGRESQL_PASSWORD}"
