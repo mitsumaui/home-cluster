@@ -63,7 +63,7 @@ spec:
       enabled: true
       image:
         repository: postgres
-        tag: '13.6'
+        tag: '14.2'
       auth:
         database: home-assistant
         username: home-assistant
