@@ -40,6 +40,7 @@ spec:
         annotations:
           hajimari.io/enable: "true"
           hajimari.io/icon: "plex"
+          nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
         hosts:
         - host: plex.${SECRET_DOMAIN}
           paths:
