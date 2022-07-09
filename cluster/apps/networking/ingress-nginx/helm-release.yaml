@@ -51,8 +51,8 @@ spec:
           namespace: networking
           namespaceSelector:
             any: true
-        prometheusRule:
-          enabled: true
+        # prometheusRule:
+        #   enabled: true
       extraArgs:
         default-ssl-certificate: "networking/${SECRET_DOMAIN/./-}-tls"
       resources:
