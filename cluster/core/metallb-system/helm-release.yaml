@@ -15,27 +15,27 @@ spec:
         kind: HelmRepository
         name: metallb-charts
         namespace: flux-system
-    values:
-    prometheus:
-      podMonitor:
-        enabled: false
-      prometheusRule:
-        enabled: false
+  values:
+  prometheus:
+    podMonitor:
+      enabled: false
+    prometheusRule:
+      enabled: false
 
-    # speaker:
-    #   tolerations:
-    #     - effect: "NoExecute"
-    #       operator: "Exists"
-    #     - effect: "NoSchedule"
-    #       operator: "Exists"
-      # frr:
-      #   enabled: true
-      #   image:
-      #     repository: docker.io/frrouting/frr
-      #     tag: v8.2.2
+  speaker:
+    tolerations:
+      - effect: "NoExecute"
+        operator: "Exists"
+      - effect: "NoSchedule"
+        operator: "Exists"
+    # frr:
+    #   enabled: true
+    #   image:
+    #     repository: docker.io/frrouting/frr
+    #     tag: v8.2.2
 
-    crds:
-      enabled: true
+  crds:
+    enabled: true
 
   postRenderers:
     - kustomize:
