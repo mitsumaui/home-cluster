@@ -24,7 +24,7 @@ spec:
     timeZone: "Europe/London"
     config: |
       upstream:
-        externalResolvers:
+        default:
         - tcp-tls:1.0.0.1:853
         - https://cloudflare-dns.com/dns-query
         - tcp+udp:1.1.1.1
@@ -42,7 +42,7 @@ spec:
           ads:
           - https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
           - https://s3.amazonaws.com/lists.disconnect.me/simple_ad.txt
-          - https://mirror1.malwaredomains.com/files/justdomains
+          # - https://mirror1.malwaredomains.com/files/justdomains
           - http://sysctl.org/cameleon/hosts
           - https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist
           - https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt
