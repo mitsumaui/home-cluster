@@ -22,12 +22,12 @@ spec:
       prometheusRule:
         enabled: false
 
-    speaker:
-      tolerations:
-        - effect: "NoExecute"
-          operator: "Exists"
-        - effect: "NoSchedule"
-          operator: "Exists"
+    # speaker:
+    #   tolerations:
+    #     - effect: "NoExecute"
+    #       operator: "Exists"
+    #     - effect: "NoSchedule"
+    #       operator: "Exists"
       # frr:
       #   enabled: true
       #   image:
