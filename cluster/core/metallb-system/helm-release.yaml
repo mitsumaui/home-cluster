@@ -15,6 +15,36 @@ spec:
         kind: HelmRepository
         name: metallb-charts
         namespace: flux-system
+    values:
+    prometheus:
+      podMonitor:
+        enabled: false
+      prometheusRule:
+        enabled: false
+
+    speaker:
+      tolerations:
+        - effect: "NoExecute"
+          operator: "Exists"
+        - effect: "NoSchedule"
+          operator: "Exists"
+      # frr:
+      #   enabled: true
+      #   image:
+      #     repository: docker.io/frrouting/frr
+      #     tag: v8.2.2
+
+    crds:
+      enabled: true
+
+  postRenderers:
+    - kustomize:
+        patchesStrategicMerge:
+          - $patch: delete
+            apiVersion: admissionregistration.k8s.io/v1
+            kind: ValidatingWebhookConfiguration
+            metadata:
+              name: validating-webhook-configuration
   # values:
   #   configInline:
   #     address-pools:
