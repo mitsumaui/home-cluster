@@ -40,8 +40,8 @@ spec:
       #     tag: v8.2.2 
     controller:
       logLevel: error
-    # crds:
-    #   enabled: true
+    crds:
+      enabled: true
 
   postRenderers:
     - kustomize:

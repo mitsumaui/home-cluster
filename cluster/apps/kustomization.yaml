@@ -9,4 +9,5 @@ resources:
   - system-upgrade
   - home
   - media
+  - metallb-system
   
