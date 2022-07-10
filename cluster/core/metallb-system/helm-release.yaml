@@ -15,13 +15,18 @@ spec:
         kind: HelmRepository
         name: metallb-charts
         namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
   values:
     prometheus:
       podMonitor:
         enabled: false
       prometheusRule:
         enabled: false
-
     speaker:
       tolerations:
         - effect: "NoExecute"
@@ -32,8 +37,9 @@ spec:
       #   enabled: true
       #   image:
       #     repository: docker.io/frrouting/frr
-      #     tag: v8.2.2
-
+      #     tag: v8.2.2 
+    controller:
+      logLevel: error
     crds:
       enabled: true
 
