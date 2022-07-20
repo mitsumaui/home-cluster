@@ -18,3 +18,20 @@
   loop:
     - swap
     - none
+
+- name: Exclude sd{x} devices from multipathing
+  ansible.builtin.blockinfile:
+    path: /etc/multipath.conf
+    create: true
+    block: |
+      blacklist {
+      devnode "^sd[a-z0-9]+"
+      }
+  register: multipath_exclude
+
+- name: Restart multipathd
+  when: multipath_exclude.changed
+  ansible.builtin.systemd:
+    name: multipathd
+    enabled: true
+    state: restarted
