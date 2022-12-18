@@ -20,7 +20,7 @@ spec:
     controllerType: deployment
     image:
       repository: ghcr.io/home-assistant/home-assistant
-      tag: 2022.11.3
+      tag: 2022.12.7
     env:
       TZ: "Europe/London"
     hostNetwork: true
