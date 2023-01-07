@@ -162,7 +162,7 @@ spec:
       logs:
         enabled: true
         mountPath: /opt/tplink/EAPController/logs
-    #     existingClaim: omada-logs-pvc
+        existingClaim: omada-logs-pvc
     # nodeSelector:
     #   node-role.kubernetes.io/worker: "true"
     resources:
