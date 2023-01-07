@@ -5,6 +5,8 @@ metadata:
   name: cluster-settings
   namespace: flux-system
 data:
+  TIMEZONE: "Europe/London"
+
   WHITELIST_SOURCE_RANGE: 192.168.167.0/24
   NAS_SERVER: 192.168.167.5
 
@@ -16,6 +18,7 @@ data:
   ADGUARD_LB: 192.168.167.74
 
   PLEX_LB: 192.168.167.75
+  NUT_LB: 192.168.167.76
 
   VERNEMQ_LB: 192.168.167.80
   HASS_LB: 192.168.167.81

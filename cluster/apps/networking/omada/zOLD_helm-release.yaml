@@ -1,0 +1,153 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: omada-controller
+  namespace: networking
+spec:
+  interval: 5m
+  chart:
+    spec:
+      # renovate: registryUrl=https://k8s-at-home.com/charts/
+      chart: omada-controller
+      version: 4.4.2
+      sourceRef:
+        kind: HelmRepository
+        name: k8s-at-home-charts
+        namespace: flux-system
+      interval: 5m
+  values:
+    image:
+      repository: mbentley/omada-controller
+      tag: "5.7"
+    env:
+      TZ: "Europe/London"
+      MANAGE_HTTP_PORT: 8088
+      MANAGE_HTTPS_PORT: 8043
+      PORTAL_HTTP_PORT: 8088
+      PORTAL_HTTPS_PORT: 8843
+      SHOW_SERVER_LOGS: true
+      SHOW_MONGODB_LOGS: true
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: nginx
+        annotations:
+          ingress.kubernetes.io/whitelist-source-range: 192.168.167.0/24
+          cert-manager.io/cluster-issuer: letsencrypt-production
+          nginx.ingress.kubernetes.io/auth-url: https://auth.${SECRET_DOMAIN}/oauth2/auth
+          nginx.ingress.kubernetes.io/auth-signin: https://auth.${SECRET_DOMAIN}/oauth2/start
+          nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+          nginx.ingress.kubernetes.io/proxy-ssl-verify: 'off'
+          nginx.ingress.kubernetes.io/app-root: /login
+          hajimari.io/enable: "true"
+          hajimari.io/icon: "wifi-sync"
+        hosts:
+          - host: "omada.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - "omada.${SECRET_DOMAIN}"
+            secretName: omada-tls
+    service:
+      main:
+        enabled: true
+      controller-tcp:
+        enabled: true
+        type: LoadBalancer
+        loadBalancerIP: ${OMADA_LB}
+        annotations:
+          metallb.universe.tf/allow-shared-ip: omada
+        externalTrafficPolicy: Local
+        ports:        
+          mgmt-8088-tcp:
+            enabled: true
+            port: 8088
+            protocol: TCP
+            targetPort: 8088
+          mgmt-8043-tcp:
+            enabled: true
+            port: 8043
+            protocol: TCP
+            targetPort: 8043
+          portal-8843-tcp:
+            enabled: true
+            port: 8843
+            protocol: TCP
+            targetPort: 8843
+          eap-29810-tcp:
+            enabled: true
+            port: 29810
+            protocol: TCP
+            targetPort: 29810     
+          eap-29811-tcp:
+            enabled: true
+            port: 29811
+            protocol: TCP
+            targetPort: 29811
+          eap-29812-tcp:
+            enabled: true
+            port: 29812
+            protocol: TCP
+            targetPort: 29812
+          eap-29813-tcp:
+            enabled: true
+            port: 29813
+            protocol: TCP
+            targetPort: 29813
+      controller-udp:
+        enabled: true
+        type: LoadBalancer
+        loadBalancerIP: ${OMADA_LB}
+        annotations:
+          metallb.universe.tf/allow-shared-ip: omada
+        externalTrafficPolicy: Local
+        ports:
+          eap-29810-udp:
+            enabled: true
+            port: 29810
+            protocol: UDP
+            targetPort: 29810
+          eap-29811-udp:
+            enabled: true
+            port: 29811
+            protocol: UDP
+            targetPort: 29811
+          eap-29812-udp:
+            enabled: true
+            port: 29812
+            protocol: UDP
+            targetPort: 29812
+          eap-29813-udp:
+            enabled: true
+            port: 29813
+            protocol: UDP
+            targetPort: 29813
+    persistence:
+      data:
+        enabled: true
+        mountPath: /opt/tplink/EAPController/data
+        existingClaim: omada-data-pvc
+      work:
+        enabled: true
+        mountPath: /opt/tplink/EAPController/work
+        existingClaim: omada-work-pvc
+      logs:
+        enabled: true
+        mountPath: /opt/tplink/EAPController/logs
+        existingClaim: omada-logs-pvc
+      cert:
+        enabled: true
+        mountPath: /cert
+        type: custom
+        volumeSpec:
+          secret:
+            secretName: "${SECRET_DOMAIN/./-}-tls"
+    resources:
+      requests:
+        memory: 1200M
+        # cpu: 1200m
+      limits:
+        memory: 1500M
