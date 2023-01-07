@@ -1,0 +1,173 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: &app omada-controller
+  namespace: networking
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 1.2.1
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s-charts
+        namespace: flux-system
+      interval: 15m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  values:
+    global:
+      nameOverride: *app
+    hostNetwork: true
+    image:
+      repository: mbentley/omada-controller
+      tag: "5.7"
+    env:
+      TZ: "${TIMEZONE}"
+      MANAGE_HTTP_PORT: "8088"
+      MANAGE_HTTPS_PORT: "443"
+      PORTAL_HTTP_PORT: "8088"
+      PORTAL_HTTPS_PORT: "8043"
+      SHOW_SERVER_LOGS: "true"
+      SHOW_MONGODB_LOGS: "true"
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "nginx"
+        annotations:
+          ingress.kubernetes.io/whitelist-source-range: 192.168.167.0/24
+          cert-manager.io/cluster-issuer: letsencrypt-production
+          #coredns.io/hostname: &host "omada.${SECRET_DOMAIN}"
+          hajimari.io/enable: "true"
+          hajimari.io/icon: "router-wireless-settings"
+          # TODO: #331 configure nginx redirect rules and headers
+          # Add a proxy redirect because omada expects it and will redirect to the ssl port if it's not explicitly in the URL
+          nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+          nginx.ingress.kubernetes.io/proxy-ssl-verify: "off"
+          nginx.ingress.kubernetes.io/upstream-vhost: "omada.${SECRET_DOMAIN}"
+
+          # nginx.ingress.kubernetes.io/proxy-redirect-from: "~https://(.+):8043/(.+)/login$"
+          # nginx.ingress.kubernetes.io/proxy-redirect-to: "https://$http_host/$2/login"
+
+          # Add a few more headers to make Omada happy
+          # nginx.ingress.kubernetes.io/configuration-snippet: |
+          #   proxy_set_header        X-Real-IP                 $remote_addr;
+          #   proxy_set_header        X-Forwarded-For           $proxy_add_x_forwarded_for;
+          #   proxy_set_header        Cookie                    $http_cookie;
+          #   proxy_set_header        X-Forwarded-Proto         $scheme;
+          #   proxy_set_header        Upgrade                   $http_upgrade;
+          #   proxy_set_header        Connection                "upgrade";
+        hosts:
+          - host: &host "omada.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host
+          # - secretName: "${SECRET_DOMAIN/./-}-tls"
+    service:
+      main:
+        enabled: true
+        ports:
+          http:
+            enabled: true
+            port: 443
+            targetPort: 443
+            protocol: TCP
+      controller:
+        enabled: true
+        type: LoadBalancer
+        loadBalancerIP: ${OMADA_LB}
+        annotations:
+          metallb.universe.tf/allow-shared-ip: omada
+        externalTrafficPolicy: Local
+        ports:
+          mgmt-8088-tcp:
+            enabled: true
+            port: 8088
+            targetPort: 8088
+            protocol: TCP
+          mgmt-443-tcp:
+            enabled: true
+            port: 443
+            targetPort: 443
+            protocol: TCP
+          portal-8843-tcp:
+            enabled: true
+            port: 8843
+            targetPort: 8843
+            protocol: TCP
+          eap-discovery:
+            enabled: true
+            port: 29810
+            targetPort: 29810
+            protocol: UDP
+          old-eap-mgmt:
+            enabled: true
+            port: 29811
+            protocol: TCP
+            targetPort: 29811
+          old-eap-adopt:
+            enabled: true
+            port: 29812
+            protocol: TCP
+            targetPort: 29812
+          old-eap-upgrade:
+            enabled: true
+            port: 29813
+            protocol: TCP
+            targetPort: 29813
+          eap-adopt:
+            enabled: true
+            port: 29814
+            targetPort: 29814
+            protocol: TCP
+          init-check:
+            enabled: true
+            port: 27001
+            targetPort: 27001
+            protocol: UDP
+          old-init-info:
+            enabled: true
+            port: 27002
+            protocol: TCP
+            targetPort: 27002
+          old-db-access:
+            enabled: true
+            port: 27017
+            protocol: TCP
+            targetPort: 27017
+          db-access:
+            enabled: true
+            port: 27217
+            targetPort: 27217
+            protocol: TCP
+    persistence:
+      data:
+        enabled: true
+        mountPath: /opt/tplink/EAPController/data
+        existingClaim: omada-data-pvc
+      work:
+        enabled: true
+        mountPath: /opt/tplink/EAPController/work
+        existingClaim: omada-work-pvc
+      logs:
+        enabled: true
+        mountPath: /opt/tplink/EAPController/logs
+    #     existingClaim: omada-logs-pvc
+    # nodeSelector:
+    #   node-role.kubernetes.io/worker: "true"
+    resources:
+      requests:
+        cpu: 1200m
+        memory: 1200Mi
+      limits:
+        memory: 1500Mi
