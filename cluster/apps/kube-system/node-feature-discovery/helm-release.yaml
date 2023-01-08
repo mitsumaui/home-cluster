@@ -52,6 +52,12 @@ spec:
             - pciId:
                 class: ["0300"]
                 vendor: ["8086"]
+          - name: ups-apc
+            matchOn:
+              - usbId:
+                  class: ["03"]
+                  vendor: ["051d"]
+                  device: ["0002"]
     master:
       replicaCount: 1
       tolerations:
