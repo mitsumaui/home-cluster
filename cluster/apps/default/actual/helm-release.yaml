@@ -36,9 +36,8 @@ spec:
     env:
       PORT: "5006"
       TINI_SUBREAPER: 1
-    # envFrom:
-    #   - secretRef:
-    #       name: actual-secrets
+      ACTUAL_NORDIGEN_SECRET_ID: "${ACTUAL_NG_ID}"
+      ACTUAL_NORDIGEN_SECRET_KEY: "${ACTUAL_NG_KEY}"
 
     ingress:
       main:
