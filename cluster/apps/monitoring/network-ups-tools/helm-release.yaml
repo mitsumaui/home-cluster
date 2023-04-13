@@ -43,7 +43,7 @@ spec:
           http:
             port: 3493
             protocol: TCP
-        loadBalancerIP: ${NUTLB}
+        loadBalancerIP: ${NUT_LB}
         externalTrafficPolicy: Local
 
       metrics:
