@@ -45,6 +45,14 @@ spec:
       privileged: true
       allowPrivilegeEscalation: true
 
+    service:
+      main:
+        type: LoadBalancer
+        externalTrafficPolicy: Local
+        ports:
+          http:
+            port: 6052
+
     ingress:
       main:
         enabled: true
