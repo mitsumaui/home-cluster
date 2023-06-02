@@ -23,8 +23,10 @@ spec:
       retries: 5
   values:
     image:
-      repository: ghcr.io/k8s-at-home/node-red
-      tag: v2.2.2
+      # repository: ghcr.io/k8s-at-home/node-red
+      # tag: v2.2.2
+      repository: nodered/node-red
+      tag: 2.2.3
     env:
       TZ: "Europe/London"
     service:
