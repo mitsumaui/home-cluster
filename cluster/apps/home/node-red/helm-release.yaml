@@ -5,29 +5,37 @@ metadata:
   name: node-red
   namespace: home
 spec:
-  interval: 5m
+  interval: 15m
   chart:
     spec:
-      # renovate: registryUrl=https://k8s-at-home.com/charts/
-      chart: node-red
-      version: 10.1.2
+      chart: app-template
+      version: 1.5.0
       sourceRef:
         kind: HelmRepository
-        name: k8s-at-home-charts
+        name: bjw-s-charts
         namespace: flux-system
-      interval: 5m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
   values:
     image:
-      repository: nodered/node-red
-      tag: 2.2.3
+      repository: ghcr.io/k8s-at-home/node-red
+      tag: v3.0.2
     env:
       TZ: "Europe/London"
-      NODE_RED_ENABLE_PROJECTS: "true"
-      NODE_RED_ENABLE_SAFE_MODE: "false"
+    service:
+      main:
+        ports:
+          http:
+            port: 1880
     ingress:
       main:
         enabled: true
-        ingressClassName: nginx
+        ingressClassName: "nginx"
         annotations:
           ingress.kubernetes.io/whitelist-source-range: 192.168.167.0/24
           nginx.ingress.kubernetes.io/auth-url: https://auth.${SECRET_DOMAIN}/oauth2/auth
@@ -35,13 +43,18 @@ spec:
           hajimari.io/enable: "true"
           hajimari.io/icon: "home-automation"
         hosts:
-        - host: nodered.${SECRET_DOMAIN}
-          paths:
-          - path: /
-            pathType: Prefix
+          - host: &host "nodered.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
         tls:
-        - hosts:
-          - nodered.${SECRET_DOMAIN}
+          - hosts:
+              - *host
+    podSecurityContext:
+      runAsUser: 568
+      runAsGroup: 568
+      fsGroup: 568
+      fsGroupChangePolicy: "OnRootMismatch"
     persistence:
       data:
         enabled: true
