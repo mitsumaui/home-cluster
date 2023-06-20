@@ -32,8 +32,8 @@ metadata:
   namespace: home
 type: Opaque
 stringData:
-  RESTIC_REPOSITORY: s3:https://gateway.storjshare.io/home-cluster-backup/node-red
-  RESTIC_PASSWORD: glowing-enlisted-fantasy
-  AWS_ACCESS_KEY_ID: jvsptdh4kyrlzudttwd6btqejwca
-  AWS_SECRET_ACCESS_KEY: j3qla7eh6joowrylzyx2rxse3mfreozk7vdmgfhwd6zdpgdadrb6a
+  RESTIC_REPOSITORY: ${SECRET_RESTIC_S3_REPO}/node-red
+  RESTIC_PASSWORD: ${SECRET_RESTIC_PASSWORD}
+  AWS_ACCESS_KEY_ID: ${SECRET_RESTIC_S3_KEY}
+  AWS_SECRET_ACCESS_KEY: ${SECRET_RESTIC_S3_PASS}
   RESTIC_PACK_SIZE: "60"
