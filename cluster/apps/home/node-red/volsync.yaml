@@ -3,16 +3,16 @@
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
 metadata:
-  name: esphome
+  name: node-red
   namespace: home
 spec:
-  sourcePVC: esphome-pvc
+  sourcePVC: node-red-pvc
   trigger:
     schedule: 0 2 * * *
   restic:
     copyMethod: Snapshot
     pruneIntervalDays: 7
-    repository: esphome-restic-secret
+    repository: node-red-restic-secret
     volumeSnapshotClassName: longhorn-snapshot-vsc
     storageClassName: longhorn-static
     moverSecurityContext:
@@ -28,13 +28,11 @@ spec:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: esphome-restic-secret
+  name: node-red-restic-secret
   namespace: home
-  labels:
-    app.kubernetes.io/name: esphome
 type: Opaque
 stringData:
-  RESTIC_REPOSITORY: s3:https://gateway.storjshare.io/home-cluster-backup/esphome
+  RESTIC_REPOSITORY: s3:https://gateway.storjshare.io/home-cluster-backup/node-red
   RESTIC_PASSWORD: glowing-enlisted-fantasy
   AWS_ACCESS_KEY_ID: jvsptdh4kyrlzudttwd6btqejwca
   AWS_SECRET_ACCESS_KEY: j3qla7eh6joowrylzyx2rxse3mfreozk7vdmgfhwd6zdpgdadrb6a
