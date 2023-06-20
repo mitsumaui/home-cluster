@@ -6,3 +6,4 @@ resources:
   - node-feature-discovery
   - metrics-server
   - reloader
+  - snaphsot-controller
