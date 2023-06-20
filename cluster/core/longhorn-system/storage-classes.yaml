@@ -37,3 +37,17 @@ parameters:
   staleReplicaTimeout: "60"
   fromBackup: ""
   recurringJobs: '[{"name":"backup", "task":"backup", "cron":"0 2 * * *", "retain":10}]'
+
+---
+
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: longhorn-static
+provisioner: driver.longhorn.io
+allowVolumeExpansion: true
+reclaimPolicy: Retain
+parameters:
+  numberOfReplicas: "1"
+  staleReplicaTimeout: "120"
+  fromBackup: ""
