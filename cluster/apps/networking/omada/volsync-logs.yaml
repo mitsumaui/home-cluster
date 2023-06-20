@@ -1,0 +1,39 @@
+---
+# yaml-language-server: $schema=https://schemas.budimanjojo.com/volsync.backube/replicationsource_v1alpha1.json
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: omada-logs
+  namespace: home
+spec:
+  sourcePVC: omada-logs-pvc
+  trigger:
+    schedule: 0 2 * * *
+  restic:
+    copyMethod: Snapshot
+    pruneIntervalDays: 7
+    repository: omada-logs-restic-secret
+    volumeSnapshotClassName: longhorn-snapshot-vsc
+    storageClassName: longhorn-static
+    moverSecurityContext:
+      runAsUser: 568
+      runAsGroup: 568
+      fsGroup: 568
+    retain:
+      daily: 10
+      within: 3d
+
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.26.1-standalone-strict/secret-v1.json
+apiVersion: v1
+kind: Secret
+metadata:
+  name: omada-logs-restic-secret
+  namespace: home
+type: Opaque
+stringData:
+  RESTIC_REPOSITORY: ${SECRET_RESTIC_S3_REPO}/omada-logs
+  RESTIC_PASSWORD: ${SECRET_RESTIC_PASSWORD}
+  AWS_ACCESS_KEY_ID: ${SECRET_RESTIC_S3_KEY}
+  AWS_SECRET_ACCESS_KEY: ${SECRET_RESTIC_S3_PASS}
+  RESTIC_PACK_SIZE: "60"
