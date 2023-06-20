@@ -3,16 +3,16 @@
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
 metadata:
-  name: omada-work
-  namespace: networking
+  name: plex
+  namespace: media
 spec:
-  sourcePVC: omada-work-pvc
+  sourcePVC: plex-config-pvc
   trigger:
     schedule: 0 2 * * *
   restic:
     copyMethod: Snapshot
     pruneIntervalDays: 7
-    repository: omada-work-restic-secret
+    repository: plex-restic-secret
     volumeSnapshotClassName: longhorn-snapshot-vsc
     storageClassName: longhorn-static
     moverSecurityContext:
@@ -28,11 +28,13 @@ spec:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: omada-work-restic-secret
-  namespace: networking
+  name: plex-restic-secret
+  namespace: media
+  labels:
+    app.kubernetes.io/name: plex
 type: Opaque
 stringData:
-  RESTIC_REPOSITORY: ${SECRET_RESTIC_S3_REPO}/omada-work
+  RESTIC_REPOSITORY: ${SECRET_RESTIC_S3_REPO}/plex
   RESTIC_PASSWORD: ${SECRET_RESTIC_PASSWORD}
   AWS_ACCESS_KEY_ID: ${SECRET_RESTIC_S3_KEY}
   AWS_SECRET_ACCESS_KEY: ${SECRET_RESTIC_S3_PASS}

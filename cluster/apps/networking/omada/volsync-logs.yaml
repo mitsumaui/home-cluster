@@ -4,7 +4,7 @@ apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
 metadata:
   name: omada-logs
-  namespace: home
+  namespace: networking
 spec:
   sourcePVC: omada-logs-pvc
   trigger:
@@ -29,7 +29,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: omada-logs-restic-secret
-  namespace: home
+  namespace: networking
 type: Opaque
 stringData:
   RESTIC_REPOSITORY: ${SECRET_RESTIC_S3_REPO}/omada-logs
