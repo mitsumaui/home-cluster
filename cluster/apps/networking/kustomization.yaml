@@ -7,3 +7,4 @@ resources:
   - blocky
   - adguard
   - omada
+  - cloudflared
