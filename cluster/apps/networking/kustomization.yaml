@@ -4,8 +4,8 @@ resources:
   - ingress-nginx
   - wildcard-certificate
   - oauth2-proxy
+  - cloudflared
   - tailscale
   - blocky
   - adguard
   - omada
-  # - cloudflared
