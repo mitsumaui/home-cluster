@@ -14,7 +14,7 @@ spec:
     pruneIntervalDays: 7
     repository: home-assistant-postgres-restic-secret
     volumeSnapshotClassName: longhorn-snapshot-vsc
-    storageClassName: longhorn-static
+    storageClassName: longhorn-volsync
     moverSecurityContext:
       runAsUser: 568
       runAsGroup: 568
