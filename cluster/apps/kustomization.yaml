@@ -10,5 +10,5 @@ resources:
   - home
   - media
   - metallb-system
-  - volsync
+#   - volsync
   
