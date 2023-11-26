@@ -1,0 +1,122 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: &app minio
+  namespace: default
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 1.5.1
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s-charts
+        namespace: flux-system
+
+  maxHistory: 3
+
+  install:
+    remediation:
+      retries: 3
+
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+
+  values:
+    image:
+      repository: quay.io/minio/minio
+      tag: RELEASE.2023-11-15T20-43-25Z
+
+    env:
+      TZ: Europe/London
+      MINIO_UPDATE: "off"
+      MINIO_BROWSER_REDIRECT_URL: "https://minio.${SECRET_DOMAIN}"
+      MINIO_SERVER_URL: "https://s3.${SECRET_DOMAIN}"
+      MINIO_VOLUMES: /data
+
+    envFrom:
+      - secretRef:
+          name: minio-secret
+
+    args: ["server", "/data", "--console-address", ":9001"]
+
+    service:
+      main:
+        enabled: true
+        ports:
+          http:
+            port: &port-console 9001
+          api:
+            enabled: true
+            port: &port-api 9000
+
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: nginx
+        annotations:
+          ingress.kubernetes.io/whitelist-source-range: "${WHITELIST_SOURCE_RANGE}"
+          hajimari.io/enable: "true"
+          hajimari.io/appName: "Minio Console"
+          hajimari.io/icon: mdi:pail
+        hosts:
+          - host: &host-console minio.${SECRET_DOMAIN}
+            paths:
+              - path: /
+                pathType: Prefix
+                service:
+                  port: *port-console
+        tls:
+          - hosts:
+              - *host-console
+            secretName: minio-tls
+      s3:
+        enabled: true
+        ingressClassName: nginx
+        annotations:
+          ingress.kubernetes.io/whitelist-source-range: "${WHITELIST_SOURCE_RANGE}"
+          nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
+          nginx.ingress.kubernetes.io/proxy-body-size: 5000m
+          nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
+          nginx.ingress.kubernetes.io/configuration-snippet: |
+            chunked_transfer_encoding off;
+        hosts:
+          - host: &host-api "s3.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+                service:
+                  port: *port-api
+        tls:
+          - hosts:
+              - *host-api
+            secretName: minio-s3-tls
+
+
+    podSecurityContext:
+      runAsUser: 1001
+      runAsGroup: 1001
+      fsGroup: 1001
+      fsGroupChangePolicy: OnRootMismatch
+
+    persistence:
+      config:
+        enabled: true
+        existingClaim: minio-nfs
+        mountPath: /data
+
+    podAnnotations:
+      secret.reloader.stakater.com/reload: *app
+
+    # resources:
+    #   requests:
+    #     memory: 750Mi
+    #     cpu: 100m
+    #   limits:
+    #     memory: 750Mi
