@@ -1,0 +1,41 @@
+---
+# yaml-language-server: $schema=https://schemas.budimanjojo.com/volsync.backube/replicationsource_v1alpha1.json
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: omada-data-nas
+  namespace: networking
+spec:
+  sourcePVC: omada-data-pvc
+  trigger:
+    schedule: "0 */6 * * *"
+  restic:
+    copyMethod: Snapshot
+    pruneIntervalDays: 7
+    repository: omada-data-restic-nas-secret
+    volumeSnapshotClassName: longhorn-snapshot-vsc
+    storageClassName: longhorn-volsync
+    moverSecurityContext:
+      runAsUser: 568
+      runAsGroup: 568
+      fsGroup: 568
+    retain:
+      daily: 10
+      within: 3d
+
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.26.1-standalone-strict/secret-v1.json
+apiVersion: v1
+kind: Secret
+metadata:
+  name: omada-data-restic-nas-secret
+  namespace: networking
+  labels:
+    app.kubernetes.io/name: omada-data
+type: Opaque
+stringData:
+  RESTIC_REPOSITORY: s3:http://minio.default.svc.cluster.local:9000/restic-home-cluster/omada-data
+  RESTIC_PASSWORD: ${SECRET_RESTIC_PASSWORD}
+  AWS_ACCESS_KEY_ID: ${SECRET_NAS_MINIO_ACCESS_KEY}
+  AWS_SECRET_ACCESS_KEY: ${SECRET_NAS_MINIO_SECRET_KEY}
+  RESTIC_PACK_SIZE: "60"
