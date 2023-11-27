@@ -4,4 +4,6 @@ resources:
   - helm-release.yaml
   - volsync-hass.yaml
   - volsync-postgres.yaml
+  - volsync-hass-nas.yaml
+  - volsync-postgres-nas.yaml
   
